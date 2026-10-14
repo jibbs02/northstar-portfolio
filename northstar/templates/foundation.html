@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="dark">
+    <title>Northstar Local · Portfolio foundation</title>
+    <link rel="stylesheet" href="/static/styles.css">
+  </head>
+  <body>
+    <div class="shell">
+      {% include '_nav.html' %}
+      <main id="main-content">
+      <header class="masthead">
+        <div>
+          <p class="eyebrow">NORTHSTAR LOCAL</p>
+          <h1>The private foundation is running—with portfolio storage.</h1>
+          <p class="lede">Encrypted local accounts and manual CSV onboarding are available. Brokerage connections, market-data calls, trading, and money movement remain disabled.</p>
+        </div>
+        <span class="status"><i aria-hidden="true"></i> Local foundation</span>
+      </header>
+
+      <section aria-labelledby="controls-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">RELEASE GATE 01</p>
+            <h2 id="controls-title">Security controls</h2>
+          </div>
+          <span class="muted">Signed in as {{ user_email }}</span>
+        </div>
+
+        <div class="control-grid">
+          <article>
+            <span>Encrypted records</span>
+            <strong>Enabled</strong>
+            <p>SQLCipher protects the whole database; selected sensitive fields also use authenticated encryption.</p>
+          </article>
+          <article>
+            <span>Database health</span>
+            <strong>{{ "Healthy" if database_healthy else "Needs attention" }}</strong>
+            <p>Integrity checks run without revealing application or account information.</p>
+          </article>
+          <article>
+            <span>Authentication mode</span>
+            <strong>{{ auth_mode|capitalize }}</strong>
+            <p>Production will refuse to start unless Cloudflare Access is configured.</p>
+          </article>
+          <article>
+            <span>Environment</span>
+            <strong>{{ environment|capitalize }}</strong>
+            <p>Brokerage credentials remain prohibited. Production financial data uses the authenticated onboarding path after its external safety gate passes.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="verification" aria-labelledby="verify-title">
+        <div>
+          <p class="eyebrow">SAFE VERIFICATION</p>
+          <h2 id="verify-title">Exercise the foundation with synthetic data.</h2>
+          <p>These actions contain no account numbers, balances, credentials, or market information.</p>
+        </div>
+        <div class="actions">
+          <form method="post" action="/demo/verify-storage">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <button type="submit">Verify encrypted storage</button>
+          </form>
+          <form method="post" action="/demo/create-backup">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <button class="secondary" type="submit">Create encrypted backup</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="next" aria-labelledby="next-title">
+        <p class="eyebrow">GATE 02 BOUNDARY</p>
+        <h2 id="next-title">Portfolio storage and safe imports—without a dashboard.</h2>
+        <ol>
+          <li>Versioned financial records with explicit decimal precision</li>
+          <li>Encrypted account labels, provider identifiers, symbols, and descriptions</li>
+          <li>Manual CSV preview, reconciliation, commit, and reversal</li>
+          <li>No dashboard, OAuth, remote access, or portfolio data in this gate</li>
+        </ol>
+      </section>
+      </main>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+set -eu
+
+if [ ! -x .venv/bin/python ]; then
+  echo "Northstar pre-commit check requires .venv; refusing to commit."
+  exit 1
+fi
+
+.venv/bin/python scripts/scan_secrets.py --staged
+.venv/bin/python -m pytest
+

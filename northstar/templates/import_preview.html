@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="dark">
+    <title>Northstar Local · Import preview</title><link rel="stylesheet" href="/static/styles.css">
+  </head>
+  <body>
+    <div class="shell">
+      {% include '_nav.html' %}
+      <main id="main-content">
+      <header class="page-heading"><p class="eyebrow">VALIDATED PREVIEW</p><h1>{{ account.name }}</h1><p class="lede">Review {{ preview.batch.row_count }} normalized rows. Nothing has been committed yet.</p></header>
+      {% if preview.duplicate %}<p class="notice">This file already has an active preview; the existing encrypted preview is shown.</p>{% endif %}
+      <section class="panel"><div class="result-grid"><div><span>Reconciliation</span><strong>{{ preview.batch.reconciliation_status|replace('_', ' ')|title }}</strong></div><div><span>Calculated total</span><strong>{{ preview.calculated_total or 'Not applicable' }}</strong></div><div><span>Source total</span><strong>{{ preview.source_total or 'Not supplied' }}</strong></div></div></section>
+      <section class="panel" aria-labelledby="preview-title"><h2 id="preview-title">Normalized rows</h2><div class="table-wrap"><table><thead><tr><th>Row</th><th>Type</th><th>Date</th><th>Symbol</th><th>Description</th><th>Quantity</th><th>Price</th><th>Amount / value</th><th>Cost basis</th></tr></thead><tbody>
+      {% for record in preview.records %}<tr><td>{{ record.source_row }}</td><td>{{ (record.transaction_type or record.kind)|replace('_', ' ')|title }}</td><td>{{ record.trade_date or record.source_date }}</td><td>{{ record.symbol or '—' }}</td><td>{{ record.description or '—' }}</td><td>{{ record.quantity or 'Unknown' }}</td><td>{{ record.price or 'Unknown' }}</td><td>{{ record.amount or record.market_value or 'Unknown' }}</td><td>{{ record.cost_basis or 'Unknown' }}</td></tr>{% endfor %}
+      </tbody></table></div>
+      <div class="actions"><form method="post" action="/imports/{{ preview.batch.id }}/commit"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button type="submit">Commit import</button></form><a class="button-link secondary" href="/imports">Cancel</a></div></section>
+      </main>
+    </div>
+  </body>
+</html>

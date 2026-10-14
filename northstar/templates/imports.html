@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="dark">
+    <title>Northstar Local · Imports</title>
+    <link rel="stylesheet" href="/static/styles.css">
+  </head>
+  <body>
+    <div class="shell">
+      {% include '_nav.html' %}
+      <main id="main-content">
+      <header class="page-heading">
+        <p class="eyebrow">PRODUCTION ONBOARDING</p><h1>Preview a manual CSV</h1>
+        <p class="lede">Use the approved manual CSV layout for current holdings, cash, or Bitcoin. Uploads are parsed in memory, never saved as files, and committed atomically only after preview.</p>
+      </header>
+
+      {% if result == 'duplicate_import' %}<p class="notice">This exact file was already processed; no records were duplicated.</p>{% endif %}
+      {% if result == 'committed' %}<p class="notice">The import committed successfully.</p>{% endif %}
+      {% if result == 'reversed' %}<p class="notice">The import was reversed without deleting unrelated records.</p>{% endif %}
+      {% if result in ['commit_failed', 'reverse_failed'] %}<p class="notice error" role="alert">The requested import action could not be completed.</p>{% endif %}
+      {% if issues %}<div class="notice error" role="alert"><strong>Import rejected.</strong><ul>{% for issue in issues %}<li>{% if issue.row %}Row {{ issue.row }}: {% endif %}{{ issue.field or 'File' }} — {{ issue.code|replace('_', ' ') }}</li>{% endfor %}</ul></div>{% endif %}
+
+      <section class="panel" aria-labelledby="upload-title">
+        <h2 id="upload-title">Upload for validation</h2>
+        {% if accounts %}
+        <form class="form-grid" method="post" action="/imports/preview" enctype="multipart/form-data">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <label>Account<select name="account_id" required>{% for account in accounts %}<option value="{{ account.id }}">{{ account.name }}</option>{% endfor %}</select></label>
+          <label>Format<select name="adapter_key" required><option value="manual_positions_csv_v1">Manual current positions CSV v1</option><option value="manual_transactions_csv_v1">Manual transactions CSV v1</option></select></label>
+          <label class="full">CSV file<input type="file" name="upload" accept=".csv,text/csv" required></label>
+          <button type="submit">Validate and preview</button>
+        </form>
+        {% else %}<p>Create an account before importing.</p><a class="button-link" href="/accounts">Create account</a>{% endif %}
+      </section>
+
+      <section class="panel" aria-labelledby="history-title">
+        <h2 id="history-title">Privacy-safe import history</h2>
+        {% if batches %}<div class="table-wrap"><table><thead><tr><th>Format</th><th>Status</th><th>Rows</th><th>Reconciliation</th><th>Created (UTC)</th><th>Action</th></tr></thead><tbody>
+        {% for batch in batches %}<tr><td>{{ batch.adapter_key|replace('_', ' ') }}</td><td>{{ batch.status|title }}</td><td>{{ batch.row_count }}</td><td>{{ batch.reconciliation_status|replace('_', ' ')|title }}</td><td>{{ batch.created_at }}</td><td>{% if batch.status == 'committed' %}<form method="post" action="/imports/{{ batch.id }}/reverse"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button class="small secondary" type="submit">Reverse</button></form>{% else %}—{% endif %}</td></tr>{% endfor %}
+        </tbody></table></div>{% else %}<p class="muted">No import attempts are recorded.</p>{% endif %}
+      </section>
+      </main>
+    </div>
+  </body>
+</html>

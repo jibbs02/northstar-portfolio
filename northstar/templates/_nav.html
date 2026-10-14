@@ -1,0 +1,10 @@
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<nav class="primary-nav" aria-label="Primary">
+  <a {% if request.url.path == '/' %}aria-current="page"{% endif %} href="/">Overview</a>
+  <a {% if request.url.path == '/plan' %}aria-current="page"{% endif %} href="/plan">Plan</a>
+  <a {% if request.url.path == '/allocation' %}aria-current="page"{% endif %} href="/allocation">Allocate</a>
+  <a {% if request.url.path == '/settings' %}aria-current="page"{% endif %} href="/settings">Settings</a>
+  <a {% if request.url.path == '/accounts' %}aria-current="page"{% endif %} href="/accounts">Accounts</a>
+  <a {% if request.url.path.startswith('/imports') %}aria-current="page"{% endif %} href="/imports">Imports</a>
+  <a {% if request.url.path == '/status' %}aria-current="page"{% endif %} href="/status">Status</a>
+</nav>

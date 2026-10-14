@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="dark">
+    <title>Northstar Local · Accounts</title>
+    <link rel="stylesheet" href="/static/styles.css">
+  </head>
+  <body>
+    <div class="shell">
+      {% include '_nav.html' %}
+      <main id="main-content">
+      <header class="page-heading">
+        <p class="eyebrow">PORTFOLIO FOUNDATION</p>
+        <h1>Accounts</h1>
+        <p class="lede">This is the approved production path for account labels. Names, matching identifiers, and notes are field-encrypted inside the encrypted database.</p>
+      </header>
+
+      {% if error_code %}<p class="notice error" role="alert">The account could not be created. Check each field and try again.</p>{% endif %}
+
+      <section class="panel" aria-labelledby="account-list-title">
+        <h2 id="account-list-title">Local accounts</h2>
+        {% if accounts %}
+          <div class="table-wrap"><table><thead><tr><th>Name</th><th>Type</th><th>Tax treatment</th><th>Currency</th></tr></thead><tbody>
+          {% for account in accounts %}<tr><td>{{ account.name }}</td><td>{{ account.account_type|replace('_', ' ')|title }}</td><td>{{ account.tax_treatment|replace('_', ' ')|title }}</td><td>{{ account.currency }}</td></tr>{% endfor %}
+          </tbody></table></div>
+        {% else %}<p class="muted">No accounts have been created.</p>{% endif %}
+      </section>
+
+      <section class="panel" aria-labelledby="create-account-title">
+        <h2 id="create-account-title">Create an account</h2>
+        <p class="muted">Enter a personal label and, only for CSV matching, a minimal provider identifier. Never enter a full account number. The identifier is encrypted, blind-indexed for matching, and never shown again.</p>
+        <form class="form-grid" method="post" action="/accounts" autocomplete="off">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <label>Account name<input name="name" maxlength="200" required></label>
+          <label>Account type<select name="account_type" required>
+            <option value="roth_ira">Roth IRA</option><option value="hsa">HSA</option><option value="taxable_brokerage">Taxable brokerage</option><option value="cash">Cash</option><option value="bitcoin">Bitcoin</option>
+          </select></label>
+          <label>Tax treatment<select name="tax_treatment" required>
+            <option value="tax_free">Tax free</option><option value="tax_advantaged">Tax advantaged</option><option value="taxable">Taxable</option><option value="not_applicable">Not applicable</option>
+          </select></label>
+          <label>Provider identifier<input name="provider_identifier" maxlength="200" spellcheck="false"></label>
+          <label class="full">Notes<textarea name="notes" maxlength="2000"></textarea></label>
+          <button type="submit">Create account</button>
+        </form>
+      </section>
+      </main>
+    </div>
+  </body>
+</html>

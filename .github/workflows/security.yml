@@ -1,0 +1,29 @@
+name: Security and tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - run: python -m pip install --disable-pip-version-check --upgrade 'pip==26.2.1'
+      - run: python -m pip install --disable-pip-version-check -e '.[dev]'
+      - run: python scripts/scan_secrets.py --tracked
+      - run: python scripts/scan_secrets.py --history
+      - run: python -m ruff check .
+      - run: python -m pytest
+      - run: python -m pip_audit
