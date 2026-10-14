@@ -38,6 +38,7 @@ Requires Python 3.12 or later. The CI environment uses Python 3.13. Keep the run
 
 ```bash
 python3 -m venv .venv
+.venv/bin/python -m pip install --upgrade 'pip==26.2.1'
 .venv/bin/python -m pip install -e '.[dev]'
 .venv/bin/python scripts/create_runtime.py --root ~/.northstar-portfolio
 set -a
